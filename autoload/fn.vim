@@ -15,7 +15,7 @@ function! fn#fold(iterable, fn)
 
    let init = 0
    let val = 0
-   let list = type(a:iterable) == type([]) ? a:iterable : items(a:iterable)
+   let list = fn#as_list(a:iterable)
    for i in list
       if init
          let val = a:fn(i, val)
@@ -68,7 +68,7 @@ endfunction
 "   => [1, ['b', 2]]
 function! fn#find(iterable, fn)
    let found = [0, 0]
-   let list = type(a:iterable) == type([]) ? a:iterable : items(a:iterable)
+   let list = fn#as_list(a:iterable)
    for i in list
       if a:fn(i)
          let found = [1, i]
@@ -148,6 +148,16 @@ function! fn#compare_list(xs, ys)
    endfor
 
    return 0
+endfunction
+
+function! fn#as_list(iterable)
+   if type(a:iterable) == type([])
+      return a:iterable
+   elseif type(a:iterable) == type({})
+      return items(a:iterable)
+   endif
+
+   throw printf("fn#as_list: unexpected type of 'iterable': '%s'", type(a:iterable))
 endfunction
 
 function! fn#test()
